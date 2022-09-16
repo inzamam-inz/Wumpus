@@ -1,0 +1,59 @@
+.column{
+    width: 50px;
+    height: 50px;
+    background-color: rgb(207, 243, 109);
+    margin-left: 2px;
+    margin-bottom: 2px;
+}
+
+.column2{
+    width: 30px;
+    height: 30px;
+    background-color: rgb(101, 205, 236);
+    margin-left: 2px;
+    margin-bottom: 2px;
+}
+
+
+.flex-div{
+    display: flex;
+}
+.agent{
+    background-image: url("../../assets/agent.png");
+    width: 60px;
+    height: 60px;
+}
+.visited{
+    background-color: rgba(141, 104, 104, 0.493);
+}
+
+.game-board{
+    margin-top: 2%;
+
+}
+.board-image{
+    width: 50px;
+    height: 50px;
+}
+
+.main-board{
+    margin-top: 2%;
+    margin-left: 2%;
+    width: 400px;
+    height: 400px;
+}
+.move{
+    width: 30px;
+    height: 30px;
+}
+.container{
+    background: rgb(39, 56, 23);
+    height: 650px;
+}
+
+.text{
+    font-size: 12px;
+    text-align: center;
+    padding-top: 0.5rem;
+    color: rgb(231, 90, 90);
+}
