@@ -1,4 +1,5 @@
 import { XhrFactory } from '@angular/common';
+import { sanitizeIdentifier } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { min } from 'rxjs';
 import { Coordinate } from '../coordinate';
@@ -71,7 +72,7 @@ export class GameComponent implements OnInit {
                                 ['S','S','S','P','S','W','S','S','S','S']];
 
     this.findBoardValues();
-    this.AImove();
+    //this.AImove(new Coordinate(this.agentX, this.agentY));
     //console.log(this.agentX + " " + this.agentY);
 
 
@@ -436,9 +437,11 @@ export class GameComponent implements OnInit {
     return -1;
   }
 
-  takeAMove(A : Coordinate, B : Coordinate, safe : Coordinate[]) {
+  takeAMove(A : Coordinate, safe : Coordinate[]) {
     //this.visitedGrid.push(B);
-    console.log(this.visitedGrid);
+    //let copy : Coordinate[] = this.visitedGrid;
+    console.log("vis Take", A, "Agg");
+    console.log(safe);
     let depth : number[] = [];
     let parentKey : Coordinate[] = [];
     let parentValue : Coordinate[] = [];
@@ -448,6 +451,7 @@ export class GameComponent implements OnInit {
     parentKey.push(A);
     parentValue.push(A);
     queue.push(A);
+    console.log(queue);
 
     let now = 0, len = 1;
     while (now < len) {
@@ -484,10 +488,27 @@ export class GameComponent implements OnInit {
     var path : string = "";
 
     //console.log(parentValue[this.findIntoArray(B, parantKey)]);
-    let T : Coordinate = B;
+    var T : Coordinate = A;
+    var d : number = 1000;
+    for (let i = 0; i < safe.length; ++i) {
+      let ii : number = this.findIntoArray(safe[i], parentKey);
+      if (d > depth[ii]) {
+        T = safe[ii];
+        d = depth[ii];
+      }
+    }
+    if (T == undefined) {
+      console.log("SAD");
+      console.log(parentKey);
+      console.log(parentValue);
+      console.log(queue);
+    }
+    else {this.visitedGrid.push(T);
+    //console.log(d);
+    //console.log(T, 'ss');
     while (parentValue[this.findIntoArray(T, parentKey)] != T) {
       let t : Coordinate = parentValue[this.findIntoArray(T, parentKey)];
-      console.log(T, t);
+      //console.log(T, t);
       path += this.moveType(T, t);
       T = t;
     }
@@ -496,30 +517,61 @@ export class GameComponent implements OnInit {
     console.log(path);
     console.log(depth);
     console.log(parentKey);
+
+    return path;
+    }
+    return "L";
   }
 
-  AImove() {
+  AImove(A : Coordinate) {
     let pitGrid : Coordinate[] = [];
     let safeGrid : Coordinate[] = [];
     let wumpusGrid : Coordinate[] = [];
+    //console.log(this.visitedGrid);
 
     for (let i = 0; i < this.visitedGrid.length; ++i) {
-      console.log("AAA");
+      console.log("AAA", this.visitedGrid[i]);
       for (let j = 0; j < 4; ++j) {
         let X = this.fx[j] + this.visitedGrid[i].x;
         let Y = this.fy[j] + this.visitedGrid[i].y;
 
         if (this.outOfBound(X, Y)) continue;
+        console.log(X, Y, "%");
 
-        if (this.checkGridStatus(X, Y) == 'S' && this.visitedGrid.indexOf(new Coordinate(X, Y)) == -1) {
+        if (this.checkGridStatus(X, Y) == 'S' && this.findIntoArray(new Coordinate(X, Y), this.visitedGrid) == -1 && this.findIntoArray(new Coordinate(X, Y), safeGrid) == -1) {
           safeGrid.push(new Coordinate(X, Y));
           console.log(X, Y);
         }
 
       }
     }
-    this.takeAMove(this.visitedGrid[0], safeGrid[0], safeGrid);
+    if (safeGrid.length) {
+      console.log(safeGrid, A, "Agent");
+      var path = this.takeAMove(A, safeGrid);
+      for (var i = 0; i < path.length; ++i) {
+        if (path[i] == 'L') {
+          this.moveLeft();
+        }
+        if (path[i] == 'D') {
+          this.moveDown();
+        }
+        if (path[i] == 'R') {
+          this.moveRight();
+        }
+        if (path[i] == 'U') {
+          this.moveUp();
+        }
+      }
+      //console.log(this.visitedGrid);
+      //this.AImove(A);
+    }
 
+  }
+
+  nextAImove() {
+    let copy : Coordinate[] = this.visitedGrid;
+    console.log(copy, "AI move", this.agentX, this.agentY);
+    this.AImove(new Coordinate(this.agentX, this.agentY));
   }
 
 
