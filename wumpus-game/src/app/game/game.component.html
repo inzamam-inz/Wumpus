@@ -1,5 +1,4 @@
 <div class="container mt-2">
-
   <div class="canvus flex-div">
     <div class="game-board">
 
@@ -29,34 +28,28 @@
           </div>
           <div *ngIf="board[i][j]==1 && traverse_board[i][j]=='G'" class="column visited ">
             <img src="../../assets/gold.png" width="50px" height="50px" alt="" class="board-image">
-
-
           </div>
-          <div *ngIf="board[i][j]==1 && (traverse_board[i][j]=='A' || traverse_board[i][j]=='W' || traverse_board[i][j]=='P')" class="column visited ">
 
+          <div *ngIf="board[i][j]==2" class="column">
+
+            <img src="../../assets/agent.png" width="50px" height="50px" alt="" class="board-image">
           </div>
-          <div *ngIf="board[i][j]==2 && traverse_board[i][j]=='Br'" class="column">
+
+          <div style="width: 0; height: 0" *ngIf="board[i][j]==2 && checkGridStatus(i, j) =='Br'">
             <embed src="../../assets/bridge.mp3" loop="true" autostart="false" width="0" height="0">
-            <img src="../../assets/agent.png" width="50px" height="50px" alt="" class="board-image">
           </div>
-          <div *ngIf="board[i][j]==2 && traverse_board[i][j]=='SB'" class="column">
+          <div style="width: 0; height: 0" *ngIf="board[i][j]==2 && checkGridStatus(i, j) =='SB'">
             <embed src="../../assets/sb.mp3" loop="true" autostart="false" width="0" height="0">
-            <img src="../../assets/agent.png" width="50px" height="50px" alt="" class="board-image">
           </div>
-          <div *ngIf="board[i][j]==2 && traverse_board[i][j]=='St'" class="column">
+          <div style="width: 0; height: 0" *ngIf="board[i][j]==2 && checkGridStatus(i, j) =='St'">
             <embed src="../../assets/stench.mp3" loop="true" autostart="false" width="0" height="0">
-            <img src="../../assets/agent.png" width="50px" height="50px" alt="" class="board-image">
           </div>
-          <div *ngIf="board[i][j]==2 && (traverse_board[i][j]=='W' || traverse_board[i][j]=='P')" class="column">
+          <div style="width: 0; height: 0" *ngIf="board[i][j]==2 && (traverse_board[i][j]=='W' || traverse_board[i][j]=='P')">
+
             <embed src="../../assets/game_over.mp3" loop="true" autostart="false" width="0" height="0">
-            <img src="../../assets/agent.png" width="50px" height="50px" alt="" class="board-image">
           </div>
-          <div *ngIf="board[i][j]==2 && (traverse_board[i][j]=='S' || traverse_board[i][j]=='A')" class="column">
-            <img src="../../assets/agent.png" width="50px" height="50px" alt="" class="board-image">
-          </div>
-          <div *ngIf="board[i][j]==2 && (traverse_board[i][j]=='G')" class="column">
+          <div style="width: 0; height: 0" *ngIf="board[i][j]==2 && (traverse_board[i][j]=='G')">
             <embed src="../../assets/gold.mp3" loop="true" autostart="false" width="0" height="0">
-            <img src="../../assets/agent.png" width="50px" height="50px" alt="" class="board-image">
           </div>
         </div>
       </div>
@@ -89,15 +82,53 @@
   </div>
 
     <div class="move-event">
-      <button (click)="moveUp()">Up</button>
+      <div class="row mt-2">
+        <div class="col-1"></div>
+        <div class="col-1">
+          <button type="button" class="btn btn-primary" (click)="moveUp()">Up</button>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-1">
+          <button type="button" class="btn btn-primary" (click)="moveLeft()">Left</button>
+        </div>
+        <div class="col-1">
+        </div>
+        <div class="col-1">
+          <button type="button" class="btn btn-primary" (click)="moveRight()">Right</button>
+        </div>
+      </div>
+      <div class="row mt-2">
+        <div class="col-1"></div>
+        <div class="col-1">
+          <button type="button" class="btn btn-primary" (click)="moveDown()">Down</button>
+        </div>
+      </div>
+      <!-- <button (click)="moveUp()">Up</button>
       <button (click)="moveDown()">Down</button>
       <button (click)="moveRight()">Right</button>
-      <button (click)="moveLeft()">Left</button>
+      <button (click)="moveLeft()">Left</button> -->
     </div>
     <div class="arrow-event">
-      <button (click)="arrowUp()">arrowUp</button>
+      <button (click)="arrowUp()">
+        arrowUp
+      </button>
       <button (click)="arrowDown()">arrowDown</button>
       <button (click)="arrowRight()">arrowRight</button>
       <button (click)="arrowLeft()">arrowLeft</button>
+
+
+
     </div>
+
+    <div *ngIf="iskilled == 2">
+          <embed src="../../assets/arrow.mp3" loop="true" autostart="false" width="0" height="0">
+    </div>
+    <div *ngIf="iskilled == 1">
+          <embed src="../../assets/wumpus.mp3" loop="true" autostart="false" width="0" height="0">
+    </div>
+    <!-- <div *ngIf="killSoundOff()" class="column">
+      <embed src="../../assets/game_over.mp3" loop="true" autostart="false" width="0" height="0">
+    </div> -->
+
   </div>
