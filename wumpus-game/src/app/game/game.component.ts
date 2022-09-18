@@ -16,6 +16,7 @@ export class GameComponent implements OnInit {
 
   board : any;
   decision:any;
+  isGoldFound : number = 0;
 
   agentX : number = 2;
   agentY : number = 3;
@@ -152,12 +153,13 @@ export class GameComponent implements OnInit {
   }
 
   checkGridStatus(x:number, y:number) : any {
+    if((this.traverse_board[x][y]=='W' || this.traverse_board[x][y]=='P'))return 'S';
     let mask = 0;
     for (let i = 0; i < 4; ++i) {
       let X = x + this.fx[i];
       let Y = y + this.fy[i];
 
-      if (Math.min(X, Y) < 0 || Math.max(X, Y) > 9) continue;
+      if ((Math.min(X, Y) < 0 || Math.max(X, Y) > 9) ) continue;
       if (this.traverse_board[X][Y] == 'W') mask |= 1;
       if (this.traverse_board[X][Y] == 'P') mask |= 2;
     }
@@ -279,6 +281,8 @@ export class GameComponent implements OnInit {
     this.agentY = Math.max(0, this.agentY-1);
     this.board[this.agentX][this.agentY]=2;
     if(this.traverse_board[this.agentX][this.agentY]=='G') {
+      this.isGoldFound = 1;
+      this.numOfGolds--;
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
@@ -297,6 +301,8 @@ export class GameComponent implements OnInit {
     this.agentY = Math.min(9, this.agentY+1);
     this.board[this.agentX][this.agentY]=2;
     if(this.traverse_board[this.agentX][this.agentY]=='G') {
+      this.isGoldFound = 1;
+      this.numOfGolds--;
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
@@ -315,6 +321,8 @@ export class GameComponent implements OnInit {
     this.agentX = Math.min(this.agentX+1,9);
     this.board[this.agentX][this.agentY]=2;
     if(this.traverse_board[this.agentX][this.agentY]=='G') {
+      this.isGoldFound = 1;
+      this.numOfGolds--;
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
@@ -332,6 +340,8 @@ export class GameComponent implements OnInit {
     this.agentX = Math.max(0,this.agentX-1);
     this.board[this.agentX][this.agentY]=2;
     if(this.traverse_board[this.agentX][this.agentY]=='G') {
+      this.isGoldFound = 1;
+      this.numOfGolds--;
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
@@ -405,10 +415,14 @@ export class GameComponent implements OnInit {
     }
   }
 
+  makeZero()
+  {
+    this.isGoldFound = 0;
+  }
+
   killSoundOff() {
     console.log("OFF");
     this.iskilled = 0;
-    return true;
   }
 
   moveType(A : Coordinate, B : Coordinate) : string { // A to B
@@ -536,7 +550,7 @@ export class GameComponent implements OnInit {
         let Y = this.fy[j] + this.visitedGrid[i].y;
 
         if (this.outOfBound(X, Y)) continue;
-        console.log(X, Y, "%");
+        console.log(X, Y, " CHECK ",this.findIntoArray(new Coordinate(X, Y), this.visitedGrid),this.findIntoArray(new Coordinate(X, Y), safeGrid));
 
         if (this.checkGridStatus(X, Y) == 'S' && this.findIntoArray(new Coordinate(X, Y), this.visitedGrid) == -1 && this.findIntoArray(new Coordinate(X, Y), safeGrid) == -1) {
           safeGrid.push(new Coordinate(X, Y));
