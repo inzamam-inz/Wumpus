@@ -15,14 +15,22 @@ export class GameComponent implements OnInit {
   fy = [+0, +0, +1, -1];
 
   board : any;
-  decision:any;
+  decision : any;
   isGoldFound : number = 0;
+  gameStatus : number = 0;
+
+  risk : number = 0;
+  score : number = 0;
 
   agentX : number = 2;
   agentY : number = 3;
 
   traverse_board : any;
   copy_traverse_board : any;
+  wumpusPrediction : any;
+  breezePrediction : any;
+  nextPath : string = '';
+  nextArrowMove : string = '';
 
   iskilled : number = 0;
 
@@ -32,7 +40,7 @@ export class GameComponent implements OnInit {
   arrow = new Audio('../../assets/arrow.mp3');
   wumpus = new Audio('../../assets/wumpus.mp3');
   no_arrow = new Audio('../../assets/no_arrow.mp3');
-  
+
 
   visitedGrid : Coordinate[] = [];
   safestNode : Coordinate[] = [];
@@ -77,73 +85,84 @@ export class GameComponent implements OnInit {
                                 ['S','S','S','S','P','S','S','S','S','S'],
                                 ['S','S','S','P','S','W','S','S','S','S']];
 
+
     this.findBoardValues();
+    this.init();
     //this.AImove(new Coordinate(this.agentX, this.agentY));
     //console.log(this.agentX + " " + this.agentY);
 
 
   }
 
-  findBoardValues()
-  {
-    for(let i=0;i<10;i++)
-    {
-      for(let j=0;j<10;j++)
-      {
-        if(this.traverse_board[i][j]=='A')
-        {
+  init() {
+    this.wumpusPrediction = [[0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0]];
+    this.breezePrediction = [[0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0],
+                            [0,0,0,0,0,0,0,0,0,0]];
+  }
+
+  findBoardValues() {
+    for(let i=0;i<10;i++) {
+      for(let j=0;j<10;j++) {
+        if(this.traverse_board[i][j]=='A') {
           this.visitedGrid.push(new Coordinate(i, j));
           this.board[i][j]=2;
           this.agentX = i;
           this.agentY = j;
           this.traverse_board[i][j] ='S';
         }
-        else if(this.traverse_board[i][j]=='S')
-        {
+        else if(this.traverse_board[i][j]=='S') {
           this.checkPit(i,j);
           this.checkWumpus(i,j);
           this.checkPit_Wumpus(i,j);
           //console.log('i: '+ i + ' j: ' + j + ' ' +this.traverse_board[i][j] + this.copy_traverse_board[i][j]);
         }
-        else if(this.traverse_board[i][j]=='G')
-        {
+        else if(this.traverse_board[i][j]=='G') {
           this.numOfGolds = this.numOfGolds + 1;
         }
-        else if(this.traverse_board[i][j]=='W'){
+        else if(this.traverse_board[i][j]=='W') {
           this.numOfWumpus++;
           this.numOfArrows++;
         }
-
       }
-
     }
   }
 
   checkPit_Wumpus(i:number,j:number)
   {
 
-    if((i+1<=9 && j+1<=9) && ((this.traverse_board[i+1][j]=='W' && this.traverse_board[i][j+1]=='P')||(this.traverse_board[i+1][j]=='P' && this.traverse_board[i][j+1]=='W')))
-    {
+    if((i+1<=9 && j+1<=9) && ((this.traverse_board[i+1][j]=='W' && this.traverse_board[i][j+1]=='P')||(this.traverse_board[i+1][j]=='P' && this.traverse_board[i][j+1]=='W'))) {
       this.traverse_board[i][j] = 'SB';
     }
-    if(i+1<=9 && j-1>=0 && ((this.traverse_board[i+1][j]=='W' && this.traverse_board[i][j-1]=='P')||(this.traverse_board[i+1][j]=='P' && this.traverse_board[i][j-1]=='W')))
-    {
+    if(i+1<=9 && j-1>=0 && ((this.traverse_board[i+1][j]=='W' && this.traverse_board[i][j-1]=='P')||(this.traverse_board[i+1][j]=='P' && this.traverse_board[i][j-1]=='W'))) {
       this.traverse_board[i][j] = 'SB';
     }
-    if(i-1>=0 && j-1>=0 && ((this.traverse_board[i-1][j]=='W' && this.traverse_board[i][j-1]=='P')||(this.traverse_board[i-1][j]=='P' && this.traverse_board[i][j-1]=='W')))
-    {
+    if(i-1>=0 && j-1>=0 && ((this.traverse_board[i-1][j]=='W' && this.traverse_board[i][j-1]=='P')||(this.traverse_board[i-1][j]=='P' && this.traverse_board[i][j-1]=='W'))) {
       this.traverse_board[i][j] = 'SB';
     }
-    if(i-1>=0 && j+1<=9 && ((this.traverse_board[i-1][j]=='W' && this.traverse_board[i][j+1]=='P')||(this.traverse_board[i-1][j]=='P' && this.traverse_board[i][j+1]=='W')))
-    {
+    if(i-1>=0 && j+1<=9 && ((this.traverse_board[i-1][j]=='W' && this.traverse_board[i][j+1]=='P')||(this.traverse_board[i-1][j]=='P' && this.traverse_board[i][j+1]=='W'))) {
       this.traverse_board[i][j] = 'SB';
     }
-    if(j-1>=0 && j+1<=9 && ((this.traverse_board[i][j-1]=='W' && this.traverse_board[i][j+1]=='P')||(this.traverse_board[i][j-1]=='P' && this.traverse_board[i][j+1]=='W')))
-    {
+    if(j-1>=0 && j+1<=9 && ((this.traverse_board[i][j-1]=='W' && this.traverse_board[i][j+1]=='P')||(this.traverse_board[i][j-1]=='P' && this.traverse_board[i][j+1]=='W'))) {
       this.traverse_board[i][j] = 'SB';
     }
-    if(i+1<=9 && i-1<=0 &&  ((this.traverse_board[i+1][j]=='W' && this.traverse_board[i-1][j]=='P')||(this.traverse_board[i+1][j]=='P' && this.traverse_board[i-1][j]=='W')))
-    {
+    if(i+1<=9 && i-1<=0 &&  ((this.traverse_board[i+1][j]=='W' && this.traverse_board[i-1][j]=='P')||(this.traverse_board[i+1][j]=='P' && this.traverse_board[i-1][j]=='W'))) {
       this.traverse_board[i][j] = 'SB';
     }
 
@@ -175,48 +194,34 @@ export class GameComponent implements OnInit {
     else                 return "S";
   }
 
-  checkWumpus(i:number,j:number)
-  {
-
-    if(i+1<=9 && this.traverse_board[i+1][j]=='W')
-    {
+  checkWumpus(i:number,j:number) {
+    if(i+1<=9 && this.traverse_board[i+1][j]=='W') {
       this.traverse_board[i][j] = 'St';
     }
-    if(i-1>=0 && this.traverse_board[i-1][j]=='W')
-    {
+    if(i-1>=0 && this.traverse_board[i-1][j]=='W') {
       this.traverse_board[i][j] = 'St';
     }
-    if(j-1>=0 && this.traverse_board[i][j-1]=='W')
-    {
+    if(j-1>=0 && this.traverse_board[i][j-1]=='W') {
       this.traverse_board[i][j] = 'St';
     }
-    if(j+1<=9 && this.traverse_board[i][j+1]=='W')
-    {
+    if(j+1<=9 && this.traverse_board[i][j+1]=='W') {
       this.traverse_board[i][j] = 'St';
     }
-
   }
 
-  checkPit(i:number,j:number)
-  {
-
-    if(i+1<=9 && this.traverse_board[i+1][j]=='P')
-    {
+  checkPit(i:number,j:number) {
+    if(i+1<=9 && this.traverse_board[i+1][j]=='P') {
       this.traverse_board[i][j] = 'Br';
     }
-    if(i-1>=0 && this.traverse_board[i-1][j]=='P')
-    {
+    if(i-1>=0 && this.traverse_board[i-1][j]=='P') {
       this.traverse_board[i][j] = 'Br';
     }
-    if(j-1>=0 && this.traverse_board[i][j-1]=='P')
-    {
+    if(j-1>=0 && this.traverse_board[i][j-1]=='P') {
       this.traverse_board[i][j] = 'Br';
     }
-    if(j+1<=9 && this.traverse_board[i][j+1]=='P')
-    {
+    if(j+1<=9 && this.traverse_board[i][j+1]=='P') {
       this.traverse_board[i][j] = 'Br';
     }
-
   }
 
   // decisionMaking(i:number,j:number)
@@ -279,79 +284,84 @@ export class GameComponent implements OnInit {
   //   console.log(this.decision);
   // }
 
-  moveLeft()
-  {
+  moveLeft() {
+    this.score -= 10;
     this.board[this.agentX][this.agentY]=1;
 
     this.agentY = Math.max(0, this.agentY-1);
     this.board[this.agentX][this.agentY]=2;
     if(this.traverse_board[this.agentX][this.agentY]=='G') {
+      this.score += 2000;
       this.isGoldFound = 1;
       this.numOfGolds--;
+      if (this.numOfGolds == 0) this.gameStatus = 1;
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
     if(this.traverse_board[this.agentX][this.agentY]=='W' || this.traverse_board[this.agentX][this.agentY]=='P') {
+      this.gameStatus = -1;
       console.log("GAME OVER");
     }
     console.log(this.agentX + " left " + this.agentY);
 
   }
 
-  moveRight()
-  {
+  moveRight() {
+    this.score -= 10;
     this.board[this.agentX][this.agentY]=1;
-
-
     this.agentY = Math.min(9, this.agentY+1);
     this.board[this.agentX][this.agentY]=2;
     if(this.traverse_board[this.agentX][this.agentY]=='G') {
+      this.score += 2000;
       this.isGoldFound = 1;
       this.numOfGolds--;
+      if (this.numOfGolds == 0) this.gameStatus = 1;
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
     if(this.traverse_board[this.agentX][this.agentY]=='W' || this.traverse_board[this.agentX][this.agentY]=='P') {
+      this.gameStatus = -1;
       console.log("GAME OVER");
     }
     console.log(this.agentX + " right " + this.agentY);
 
   }
 
-  moveDown()
-  {
+  moveDown() {
+    this.score -= 10;
     this.board[this.agentX][this.agentY]=1;
-
-
     this.agentX = Math.min(this.agentX+1,9);
     this.board[this.agentX][this.agentY]=2;
     if(this.traverse_board[this.agentX][this.agentY]=='G') {
+      this.score += 2000;
       this.isGoldFound = 1;
       this.numOfGolds--;
+      if (this.numOfGolds == 0) this.gameStatus = 1;
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
     if(this.traverse_board[this.agentX][this.agentY]=='W' || this.traverse_board[this.agentX][this.agentY]=='P') {
+      this.gameStatus = -1;
       console.log("GAME OVER");
     }
     console.log(this.agentX + " down " + this.agentY);
-
   }
 
-  moveUp()
-  {
+  moveUp() {
+    this.score -= 10;
     this.board[this.agentX][this.agentY]=1;
-
     this.agentX = Math.max(0,this.agentX-1);
     this.board[this.agentX][this.agentY]=2;
     if(this.traverse_board[this.agentX][this.agentY]=='G') {
+      this.score += 2000;
       this.isGoldFound = 1;
       this.numOfGolds--;
+      if (this.numOfGolds == 0) this.gameStatus = 1;
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
     if(this.traverse_board[this.agentX][this.agentY]=='W' || this.traverse_board[this.agentX][this.agentY]=='P') {
-
+      this.gameStatus = -1;
       console.log("GAME OVER");
     }
     console.log(this.agentX + " up " + this.agentY);
@@ -362,15 +372,17 @@ export class GameComponent implements OnInit {
     return this.iskilled;
   }
 
-  arrowUp(){
-    if(this.numOfArrows>0){
-      if(this.traverse_board[Math.max(this.agentX-1,0)][this.agentY]=='W')
-      {
+  arrowUp() {
+    if (this.numOfArrows>0){
+      this.score -= 100;
+
+      if (this.traverse_board[Math.max(this.agentX-1,0)][this.agentY]=='W') {
         this.wumpus.play();
+        this.score += 1000;
         this.iskilled = 1;
         this.traverse_board[this.agentX-1][this.agentY] = 'S';
         this.copy_traverse_board[this.agentX-1][this.agentY] = 'S';
-        
+
         //setTimeout(this.killDone, 5000);
         //this.board[this.agentX-1][this.agentY] = 1;
       }
@@ -384,19 +396,21 @@ export class GameComponent implements OnInit {
     {
       this.no_arrow.play();
     }
-    
+
 
   }
 
-  arrowDown(){
-    if(this.numOfArrows>0){
-      if(this.traverse_board[Math.min(this.agentX+1,9)][this.agentY]=='W')
-      {
+  arrowDown() {
+    if(this.numOfArrows>0) {
+      this.score -= 100;
+
+      if(this.traverse_board[Math.min(this.agentX+1,9)][this.agentY]=='W') {
         this.wumpus.play();
+        this.score += 1000;
         this.iskilled = 1;
         this.traverse_board[this.agentX+1][this.agentY] = 'S';
         this.copy_traverse_board[this.agentX+1][this.agentY] = 'S';
-        
+
         //this.board[this.agentX+1][this.agentY] = 1;
       }
       else {
@@ -405,21 +419,22 @@ export class GameComponent implements OnInit {
       }
       this.numOfArrows = Math.max(0,this.numOfArrows-1);
     }
-    else
-    {
+    else {
       this.no_arrow.play();
     }
   }
 
-  arrowLeft(){
-    if(this.numOfArrows>0){
-      if(this.traverse_board[this.agentX][Math.max(this.agentY-1,0)]=='W')
-      {
+  arrowLeft() {
+    if(this.numOfArrows>0) {
+      this.score -= 100;
+
+      if(this.traverse_board[this.agentX][Math.max(this.agentY-1,0)]=='W') {
         this.wumpus.play();
+        this.score += 1000;
         this.iskilled = 1;
         this.traverse_board[this.agentX][this.agentY-1] = 'S';
         this.copy_traverse_board[this.agentX][this.agentY-1] = 'S';
-        
+
 
         //this.board[this.agentX][this.agentY-1] = 1;
       }
@@ -429,21 +444,22 @@ export class GameComponent implements OnInit {
       }
       this.numOfArrows = Math.max(0,this.numOfArrows-1);
     }
-    else
-    {
+    else {
       this.no_arrow.play();
     }
   }
 
   arrowRight(){
-    if(this.numOfArrows>0){
-      if(this.traverse_board[this.agentX][Math.min(this.agentY+1,9)]=='W')
-      {
+    if(this.numOfArrows>0) {
+      this.score -= 100;
+
+      if(this.traverse_board[this.agentX][Math.min(this.agentY+1,9)]=='W') {
         this.wumpus.play();
+        this.score += 1000;
         this.iskilled = 1;
         this.traverse_board[this.agentX][this.agentY+1] = 'S';
         this.copy_traverse_board[this.agentX][this.agentY+1] = 'S';
-        
+
         //this.board[this.agentX][this.agentY+1] = 1;
       }
       else {
@@ -453,15 +469,13 @@ export class GameComponent implements OnInit {
       }
       this.numOfArrows = Math.max(0,this.numOfArrows-1);
     }
-    else
-    {
+    else {
       this.no_arrow.play();
     }
 
   }
 
-  makeZero()
-  {
+  makeZero() {
     this.isGoldFound = 0;
   }
 
@@ -470,7 +484,7 @@ export class GameComponent implements OnInit {
     this.iskilled = 0;
   }
 
-  moveType(A : Coordinate, B : Coordinate) : string { // A to B
+  moveType(A : Coordinate, B : Coordinate) : string {
     if (A.x + 1 == B.x && A.y == B.y)       return 'U';
     else if (A.x == B.x + 1 && A.y == B.y)  return 'D';
     else  if (A.x == B.x && A.y + 1 == B.y) return 'L';
@@ -554,8 +568,9 @@ export class GameComponent implements OnInit {
     var d : number = 1000;
     for (let i = 0; i < safe.length; ++i) {
       let ii : number = this.findIntoArray(safe[i], parentKey);
-      if (d > depth[ii]) {
-        T = safe[ii];
+      console.log(safe[i], depth[ii]);
+      if (ii != -1 && d > depth[ii]) {
+        T = safe[i];
         d = depth[ii];
       }
     }
@@ -566,7 +581,7 @@ export class GameComponent implements OnInit {
       console.log(parentValue);
       console.log(queue);
     }
-    else {this.visitedGrid.push(T);
+    else {//this.visitedGrid.push(T);
     //console.log(d);
     //console.log(T, 'ss');
     while (parentValue[this.findIntoArray(T, parentKey)] != T) {
@@ -586,7 +601,7 @@ export class GameComponent implements OnInit {
     return "L";
   }
 
-  
+
 
   AImove(A : Coordinate) {
     let pitGrid : Coordinate[] = [];
@@ -610,7 +625,7 @@ export class GameComponent implements OnInit {
 
     //   }
     // }
-    
+
     if (safeGrid.length) {
       console.log(safeGrid, A, "Agent");
       var path = this.takeAMove(A, safeGrid);
@@ -618,20 +633,15 @@ export class GameComponent implements OnInit {
       for (var i = 0; i < path.length; ++i) {
         if (path[i] == 'L') {
           this.moveLeft();
-          
-        
         }
         if (path[i] == 'D') {
           this.moveDown();
-          
         }
         if (path[i] == 'R') {
           this.moveRight();
-          
         }
         if (path[i] == 'U') {
           this.moveUp();
-          
         }
       }
       //console.log(this.visitedGrid);
@@ -646,84 +656,257 @@ export class GameComponent implements OnInit {
     this.AImove(new Coordinate(this.agentX, this.agentY));
   }
 
-  moveForwardAI()
-  {
-    
+  moveForwardAI() {
+    //this.init();
     let safestNode : Coordinate[] = [];
+    let warningNode : Coordinate[] = [];
+    let riskCountW : number[] = [];
+    let riskCountB : number[] = [];
 
-    if(this.findIntoArray(new Coordinate(this.agentX,this.agentY),this.visitedGrid)==-1)
-    {
+    if (this.findIntoArray(new Coordinate(this.agentX,this.agentY),this.visitedGrid)==-1) {
         this.visitedGrid.push(new Coordinate(this.agentX,this.agentY));
+        this.wumpusPrediction[this.agentX][this.agentY] = 1;
+        this.breezePrediction[this.agentX][this.agentY] = 1;
     }
 
-    //console.log(visited);
-    //console.log(this.findIntoArray(new Coordinate(0,0),visited))
-    
-
-    for(let visit of this.visitedGrid)
-    {
-      if(this.checkGridStatus(visit.x,visit.y)=='S')
-      {
-        //console.log("YES")
+    // safe node khuje ber kore
+    for (let visit of this.visitedGrid) {
+      //this.wumpusPrediction[visit.x][visit.y] = -1;
+      //this.breezePrediction[visit.x][visit.y] = -1;
+      if (this.checkGridStatus(visit.x,visit.y)=='S') {
         for (let i = 0; i < 4; ++i) {
           let X = visit.x + this.fx[i];
           let Y = visit.y + this.fy[i];
-  
+
           let V = new Coordinate(X, Y);
-          //console.log(new Coordinate(X, Y), 'v');
-          //console.log(this.visitedGrid);
-          //console.log(this.outOfBound(X, Y), this.findIntoArray(V, this.visitedGrid), this.findIntoArray(V, queue));
-          
+
           if (this.outOfBound(X, Y))  continue;
-          //console.log("*");
-          
 
-          //console.log(visited.indexOf(V)===-1)
-
-          if ((this.findIntoArray(V, this.visitedGrid) == -1 && this.findIntoArray(V, safestNode) == -1))
-          {
+          if ((this.findIntoArray(V, this.visitedGrid) == -1 && this.findIntoArray(V, safestNode) == -1)) {
             safestNode.push(V);
           }
-          //console.log(safestNode);
-          
-
         }
       }
-  
-      
     }
-    console.log(safestNode);
 
-    
+    //console.log("VOS", this.visitedGrid);
+
+    // warning owala node khuje ber kore
+    for (let visit of this.visitedGrid) {
+      //console.log("+", visit);
+      for (let i = 0; i < 4; ++i) {
+        let X = visit.x + this.fx[i];
+        let Y = visit.y + this.fy[i];
+
+        let V = new Coordinate(X, Y);
+        //console.log("_", V);
+
+        if (this.outOfBound(X, Y))  continue;
+
+        if (this.findIntoArray(V, this.visitedGrid) == -1 && this.findIntoArray(V, safestNode) == -1 && this.findIntoArray(V, warningNode) == -1) {
+          warningNode.push(V);
+          riskCountW.push(0);
+          riskCountB.push(0);
+        }
+
+        let ii = this.findIntoArray(V, warningNode);
+        if (ii == -1) continue;
+        //console.log("*");
+        //console.log(visit.x, visit.y, V);
+
+        if (this.checkGridStatus(visit.x,visit.y) == 'St') {
+          //this.wumpusPrediction[X][Y]++;
+          riskCountW[ii]++;
+        }
+        if (this.checkGridStatus(visit.x,visit.y) == 'Br') {
+          console.log(".", ii, V, visit);
+         // this.breezePrediction[X][Y]++;
+          riskCountB[ii]++;
+        }
+        if (this.checkGridStatus(visit.x,visit.y) == 'SB') {
+          console.log(".", ii, V, visit);
+          //this.wumpusPrediction[X][Y]++;
+          //this.breezePrediction[X][Y]++;
+          riskCountW[ii]++;
+          riskCountB[ii]++;
+        }
+      }
+      //console.log("#");
+    }
+
+    //console.log("warn", warningNode);
+
     if (safestNode.length) {
-      //console.log(safestNode, A, "Agent");
       var path = this.takeAMove(new Coordinate(this.agentX,this.agentY),safestNode);
-      console.log("path ",path)
-      for (var i = 0; i < path.length; ++i) {
-        if (path[i] == 'L') {
-          this.moveLeft();
-          
-        
-        }
-        if (path[i] == 'D') {
-          this.moveDown();
-          
-        }
-        if (path[i] == 'R') {
-          this.moveRight();
-          
-        }
-        if (path[i] == 'U') {
-          this.moveUp();
-          
+      this.nextPath = path;
+      //this.takeMoveForAPath(path);
+      this.risk = 0;
+
+      // TODO: visited korbo?????
+      //this.visitedGrid.push(new Coordinate(this.agentX,this.agentY));
+    }
+    else {
+      let wumpusRisk = 0, ii = -1;
+      for (let i = 0; i < riskCountW.length; ++i) {
+        if (this.wumpusPrediction[warningNode[i].x][warningNode[i].y]) continue;
+        if (riskCountW[i] > wumpusRisk) {
+          wumpusRisk = riskCountW[i];
+          ii = i;
         }
       }
-      //console.log(this.visitedGrid);
-      //this.AImove(A);
+      if (ii != -1) {
+        let wumpusNode : Coordinate[] = [];
+        //wumpusNode.push(warningNode[ii]);
+        for (let i = 0; i < 4; ++i) {
+          let x = warningNode[ii].x + this.fx[i];
+          let y = warningNode[ii].y + this.fy[i];
+
+          if (this.findIntoArray(new Coordinate(x, y), this.visitedGrid) != -1) {
+            wumpusNode.push(new Coordinate(x, y));
+          }
+        }
+        var path = this.takeAMove(new Coordinate(this.agentX, this.agentY),wumpusNode);
+        this.nextPath = path;
+        //this.takeMoveForAPath(path);
+        this.risk = 25;
+        //console.log(, this.agentX, this.agentY);
+        let tx = this.agentX;
+        let ty = this.agentY;
+
+        console.log("TTT", tx, ty);
+
+        for (let i = 0; i < path.length; ++i) {
+          if (path[i] == 'L') ty--;
+          if (path[i] == 'R') ty++;
+          if (path[i] == 'D') tx++;
+          if (path[i] == 'U') tx--;
+        }
+
+        console.log("TTT", tx, ty);
+
+        var move = this.moveType(warningNode[ii], new Coordinate(tx, ty));
+        this.nextArrowMove = move;
+        console.log("arr move", move);
+      }
+      else {
+        for (let visit of this.visitedGrid) {
+          if (this.checkGridStatus(visit.x, visit.y) == 'Br') {
+            let cc = 0, id = 0;
+            for (let i = 0; i < 4; ++i) {
+              let x = visit.x + this.fx[i];
+              let y = visit.y + this.fy[i];
+
+              if (this.outOfBound(x, y)) continue;
+
+              if (this.findIntoArray(new Coordinate(x, y), warningNode) != -1) {
+                cc++;
+                id = i;
+              }
+            }
+            if (cc == 1) {
+              let x = visit.x + this.fx[id];
+              let y = visit.y + this.fy[id];
+              console.log('HHH', id, x, y);
+              this.breezePrediction[x][y] = 1;
+            }
+          }
+        }
+        let breezeNode : Coordinate[] = [];
+        let id = 0;
+        for (let i = 0; i < riskCountB.length; ++i) {
+          if (this.breezePrediction[warningNode[i].x][warningNode[i].y] == 0) {
+            id = i;
+            break;
+          }
+        }
+        for (let i = 0; i < riskCountB.length; ++i) {
+          if (this.breezePrediction[warningNode[i].x][warningNode[i].y]) continue;
+          if (riskCountB[i] < riskCountB[id]) {
+            id = i;
+          }
+        }
+        breezeNode.push(warningNode[id]);
+        var path = this.takeAMove(new Coordinate(this.agentX,this.agentY),breezeNode);
+        this.nextPath = path;
+        //this.takeMoveForAPath(path);
+        this.risk = riskCountB[id] * 25;
+
+        console.log("TODO");
+        console.log(warningNode);
+        console.log(riskCountB);
+        console.log(riskCountW);
+        console.log(this.wumpusPrediction);
+        console.log(this.breezePrediction);
+        console.log(id);
+      }
     }
-
-
   }
 
+  takeMoveForAPath(path : string) {
+    console.log("path ",path)
+    for (var i = 0; i < path.length; ++i) {
+      if (path[i] == 'L') {
+        this.moveLeft();
+      }
+      if (path[i] == 'D') {
+        this.moveDown();
+      }
+      if (path[i] == 'R') {
+        this.moveRight();
+      }
+      if (path[i] == 'U') {
+        this.moveUp();
+      }
+    }
+  }
 
+  nextDicMove() {
+    if (this.nextPath.length) {
+      if (this.nextPath[0] == 'L') {
+        this.moveLeft();
+      }
+      if (this.nextPath[0] == 'D') {
+        this.moveDown();
+      }
+      if (this.nextPath[0] == 'R') {
+        this.moveRight();
+      }
+      if (this.nextPath[0] == 'U') {
+        this.moveUp();
+      }
+      var tem = '';
+      for (let i = 1; i < this.nextPath.length; ++i) {
+        tem += this.nextPath[i];
+      }
+      this.nextPath = tem;
+    }
+    else if (this.nextArrowMove.length) {
+      let x = this.agentX;
+      let y = this.agentY;
+      if (this.nextArrowMove == 'L') {
+        this.arrowLeft();
+        y--;
+      }
+      else if (this.nextArrowMove == 'D') {
+        this.arrowDown();
+        x++;
+      }
+      else if (this.nextArrowMove == 'U') {
+        this.arrowUp();
+        x--;
+      }
+      else if (this.nextArrowMove == 'R') {
+        this.arrowRight();
+        y++;
+      }
+      else {
+        console.log("Error!");
+      }
+      this.wumpusPrediction[x][y] = 1;
+      console.log(x, y);
+      this.nextArrowMove = '';
+    }
+  }
 }
+
+
