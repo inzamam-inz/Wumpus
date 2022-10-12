@@ -29,8 +29,13 @@ export class GameComponent implements OnInit {
   numOfGolds : number = 0;
   numOfWumpus : number = 0;
   numOfArrows : number = 0;
+  arrow = new Audio('../../assets/arrow.mp3');
+  wumpus = new Audio('../../assets/wumpus.mp3');
+  no_arrow = new Audio('../../assets/no_arrow.mp3');
+  
 
   visitedGrid : Coordinate[] = [];
+  safestNode : Coordinate[] = [];
 
 
   constructor() { }
@@ -153,7 +158,7 @@ export class GameComponent implements OnInit {
   }
 
   checkGridStatus(x:number, y:number) : any {
-    if((this.traverse_board[x][y]=='W' || this.traverse_board[x][y]=='P'))return 'S';
+    if((this.traverse_board[x][y]=='W' || this.traverse_board[x][y]=='P'))return 'D';
     let mask = 0;
     for (let i = 0; i < 4; ++i) {
       let X = x + this.fx[i];
@@ -358,61 +363,101 @@ export class GameComponent implements OnInit {
   }
 
   arrowUp(){
-    if(this.traverse_board[this.agentX-1][this.agentY]=='W')
+    if(this.numOfArrows>0){
+      if(this.traverse_board[Math.max(this.agentX-1,0)][this.agentY]=='W')
+      {
+        this.wumpus.play();
+        this.iskilled = 1;
+        this.traverse_board[this.agentX-1][this.agentY] = 'S';
+        this.copy_traverse_board[this.agentX-1][this.agentY] = 'S';
+        
+        //setTimeout(this.killDone, 5000);
+        //this.board[this.agentX-1][this.agentY] = 1;
+      }
+      else {
+        this.iskilled = 2;
+        this.arrow.play();
+      }
+      this.numOfArrows = Math.max(0,this.numOfArrows-1);
+    }
+    else
     {
-      this.iskilled = 1;
-      this.traverse_board[this.agentX-1][this.agentY] = 'S';
-      this.copy_traverse_board[this.agentX-1][this.agentY] = 'S';
-      //setTimeout(this.killDone, 5000);
-      //this.board[this.agentX-1][this.agentY] = 1;
+      this.no_arrow.play();
     }
-    else {
-      this.iskilled = 2;
-    }
+    
 
   }
 
   arrowDown(){
-    if(this.traverse_board[this.agentX+1][this.agentY]=='W')
-    {
-      this.iskilled = 1;
-      this.traverse_board[this.agentX+1][this.agentY] = 'S';
-      this.copy_traverse_board[this.agentX+1][this.agentY] = 'S';
-
-      //this.board[this.agentX+1][this.agentY] = 1;
+    if(this.numOfArrows>0){
+      if(this.traverse_board[Math.min(this.agentX+1,9)][this.agentY]=='W')
+      {
+        this.wumpus.play();
+        this.iskilled = 1;
+        this.traverse_board[this.agentX+1][this.agentY] = 'S';
+        this.copy_traverse_board[this.agentX+1][this.agentY] = 'S';
+        
+        //this.board[this.agentX+1][this.agentY] = 1;
+      }
+      else {
+        this.arrow.play();
+        this.iskilled = 2;
+      }
+      this.numOfArrows = Math.max(0,this.numOfArrows-1);
     }
-    else {
-      this.iskilled = 2;
+    else
+    {
+      this.no_arrow.play();
     }
   }
 
   arrowLeft(){
-    if(this.traverse_board[this.agentX][this.agentY-1]=='W')
-    {
-      this.iskilled = 1;
-      this.traverse_board[this.agentX][this.agentY-1] = 'S';
-      this.copy_traverse_board[this.agentX][this.agentY-1] = 'S';
+    if(this.numOfArrows>0){
+      if(this.traverse_board[this.agentX][Math.max(this.agentY-1,0)]=='W')
+      {
+        this.wumpus.play();
+        this.iskilled = 1;
+        this.traverse_board[this.agentX][this.agentY-1] = 'S';
+        this.copy_traverse_board[this.agentX][this.agentY-1] = 'S';
+        
 
-      //this.board[this.agentX][this.agentY-1] = 1;
+        //this.board[this.agentX][this.agentY-1] = 1;
+      }
+      else {
+        this.arrow.play();
+        this.iskilled = 2;
+      }
+      this.numOfArrows = Math.max(0,this.numOfArrows-1);
     }
-    else {
-      this.iskilled = 2;
+    else
+    {
+      this.no_arrow.play();
     }
   }
 
   arrowRight(){
-    if(this.traverse_board[this.agentX][this.agentY+1]=='W')
+    if(this.numOfArrows>0){
+      if(this.traverse_board[this.agentX][Math.min(this.agentY+1,9)]=='W')
+      {
+        this.wumpus.play();
+        this.iskilled = 1;
+        this.traverse_board[this.agentX][this.agentY+1] = 'S';
+        this.copy_traverse_board[this.agentX][this.agentY+1] = 'S';
+        
+        //this.board[this.agentX][this.agentY+1] = 1;
+      }
+      else {
+        this.arrow.play();
+        this.iskilled = 2;
+        console.log("R");
+      }
+      this.numOfArrows = Math.max(0,this.numOfArrows-1);
+    }
+    else
     {
-      this.iskilled = 1;
-      this.traverse_board[this.agentX][this.agentY+1] = 'S';
-      this.copy_traverse_board[this.agentX][this.agentY+1] = 'S';
+      this.no_arrow.play();
+    }
 
-      //this.board[this.agentX][this.agentY+1] = 1;
-    }
-    else {
-      this.iskilled = 2;
-      console.log("R");
-    }
   }
 
   makeZero()
@@ -442,7 +487,7 @@ export class GameComponent implements OnInit {
   }
 
   findIntoArray(A : Coordinate, ary : Coordinate[]) : number {
-    //console.log(ary);
+    //console.log("grid ", A , ary);
     for (let i = 0; i < ary.length; ++i) {
       if (ary[i].x == A.x && ary[i].y == A.y)
         return i;
@@ -454,8 +499,8 @@ export class GameComponent implements OnInit {
   takeAMove(A : Coordinate, safe : Coordinate[]) {
     //this.visitedGrid.push(B);
     //let copy : Coordinate[] = this.visitedGrid;
-    console.log("vis Take", A, "Agg");
-    console.log(safe);
+    //console.log("vis Take", A, "Agg");
+    console.log("safe node to visit : ",safe);
     let depth : number[] = [];
     let parentKey : Coordinate[] = [];
     let parentValue : Coordinate[] = [];
@@ -464,12 +509,15 @@ export class GameComponent implements OnInit {
     depth.push(0);
     parentKey.push(A);
     parentValue.push(A);
+    console.log("A",queue);
     queue.push(A);
-    console.log(queue);
+    console.log("B",queue);
+
 
     let now = 0, len = 1;
     while (now < len) {
-      let U : Coordinate = queue[now++];
+      let U : Coordinate = queue[now];
+      now++;
       console.log(U, 'u');
 
       for (let i = 0; i < 4; ++i) {
@@ -495,7 +543,7 @@ export class GameComponent implements OnInit {
         parentValue.push(U);
         queue.push(V);
         len++;
-        console.log(len, now);
+        //console.log(len, now);
       }
     }
 
@@ -511,6 +559,7 @@ export class GameComponent implements OnInit {
         d = depth[ii];
       }
     }
+    console.log(T);
     if (T == undefined) {
       console.log("SAD");
       console.log(parentKey);
@@ -537,43 +586,52 @@ export class GameComponent implements OnInit {
     return "L";
   }
 
+  
+
   AImove(A : Coordinate) {
     let pitGrid : Coordinate[] = [];
     let safeGrid : Coordinate[] = [];
     let wumpusGrid : Coordinate[] = [];
     //console.log(this.visitedGrid);
 
-    for (let i = 0; i < this.visitedGrid.length; ++i) {
-      console.log("AAA", this.visitedGrid[i]);
-      for (let j = 0; j < 4; ++j) {
-        let X = this.fx[j] + this.visitedGrid[i].x;
-        let Y = this.fy[j] + this.visitedGrid[i].y;
+    // for (let i = 0; i < this.visitedGrid.length; ++i) {
+    //   console.log("AAA", this.visitedGrid[i]);
+    //   for (let j = 0; j < 4; ++j) {
+    //     let X = this.fx[j] + this.visitedGrid[i].x;
+    //     let Y = this.fy[j] + this.visitedGrid[i].y;
 
-        if (this.outOfBound(X, Y)) continue;
-        console.log(X, Y, " CHECK ",this.findIntoArray(new Coordinate(X, Y), this.visitedGrid),this.findIntoArray(new Coordinate(X, Y), safeGrid));
+    //     if (this.outOfBound(X, Y)) continue;
+    //     //console.log(X, Y, " CHECK ",this.findIntoArray(new Coordinate(X, Y), this.visitedGrid),this.findIntoArray(new Coordinate(X, Y), safeGrid));
 
-        if (this.checkGridStatus(X, Y) == 'S' && this.findIntoArray(new Coordinate(X, Y), this.visitedGrid) == -1 && this.findIntoArray(new Coordinate(X, Y), safeGrid) == -1) {
-          safeGrid.push(new Coordinate(X, Y));
-          console.log(X, Y);
-        }
+    //     if (this.checkGridStatus(X, Y) != 'D' && (this.checkGridStatus(X, Y) == 'S' || this.checkGridStatus(X, Y) == 'SB' || this.checkGridStatus(X, Y) == 'St' || this.checkGridStatus(X, Y) == 'Br') && this.findIntoArray(new Coordinate(X, Y), this.visitedGrid) == -1 && this.findIntoArray(new Coordinate(X, Y), safeGrid) == -1) {
+    //       safeGrid.push(new Coordinate(X, Y));
+    //       //console.log(X, Y);
+    //     }
 
-      }
-    }
+    //   }
+    // }
+    
     if (safeGrid.length) {
       console.log(safeGrid, A, "Agent");
       var path = this.takeAMove(A, safeGrid);
+      console.log("path ",path)
       for (var i = 0; i < path.length; ++i) {
         if (path[i] == 'L') {
           this.moveLeft();
+          
+        
         }
         if (path[i] == 'D') {
           this.moveDown();
+          
         }
         if (path[i] == 'R') {
           this.moveRight();
+          
         }
         if (path[i] == 'U') {
           this.moveUp();
+          
         }
       }
       //console.log(this.visitedGrid);
@@ -586,6 +644,85 @@ export class GameComponent implements OnInit {
     let copy : Coordinate[] = this.visitedGrid;
     console.log(copy, "AI move", this.agentX, this.agentY);
     this.AImove(new Coordinate(this.agentX, this.agentY));
+  }
+
+  moveForwardAI()
+  {
+    
+    let safestNode : Coordinate[] = [];
+
+    if(this.findIntoArray(new Coordinate(this.agentX,this.agentY),this.visitedGrid)==-1)
+    {
+        this.visitedGrid.push(new Coordinate(this.agentX,this.agentY));
+    }
+
+    //console.log(visited);
+    //console.log(this.findIntoArray(new Coordinate(0,0),visited))
+    
+
+    for(let visit of this.visitedGrid)
+    {
+      if(this.checkGridStatus(visit.x,visit.y)=='S')
+      {
+        //console.log("YES")
+        for (let i = 0; i < 4; ++i) {
+          let X = visit.x + this.fx[i];
+          let Y = visit.y + this.fy[i];
+  
+          let V = new Coordinate(X, Y);
+          //console.log(new Coordinate(X, Y), 'v');
+          //console.log(this.visitedGrid);
+          //console.log(this.outOfBound(X, Y), this.findIntoArray(V, this.visitedGrid), this.findIntoArray(V, queue));
+          
+          if (this.outOfBound(X, Y))  continue;
+          //console.log("*");
+          
+
+          //console.log(visited.indexOf(V)===-1)
+
+          if ((this.findIntoArray(V, this.visitedGrid) == -1 && this.findIntoArray(V, safestNode) == -1))
+          {
+            safestNode.push(V);
+          }
+          //console.log(safestNode);
+          
+
+        }
+      }
+  
+      
+    }
+    console.log(safestNode);
+
+    
+    if (safestNode.length) {
+      //console.log(safestNode, A, "Agent");
+      var path = this.takeAMove(new Coordinate(this.agentX,this.agentY),safestNode);
+      console.log("path ",path)
+      for (var i = 0; i < path.length; ++i) {
+        if (path[i] == 'L') {
+          this.moveLeft();
+          
+        
+        }
+        if (path[i] == 'D') {
+          this.moveDown();
+          
+        }
+        if (path[i] == 'R') {
+          this.moveRight();
+          
+        }
+        if (path[i] == 'U') {
+          this.moveUp();
+          
+        }
+      }
+      //console.log(this.visitedGrid);
+      //this.AImove(A);
+    }
+
+
   }
 
 
