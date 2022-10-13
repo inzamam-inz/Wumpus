@@ -34,13 +34,23 @@ export class GameComponent implements OnInit {
 
   iskilled : number = 0;
 
+  isShow : number = 0;
+  status : string = "Show";
+  totalScore : number = 0;
+  file : any;
+  filecontent : any;
+
   numOfGolds : number = 0;
   numOfWumpus : number = 0;
   numOfArrows : number = 0;
   arrow = new Audio('../../assets/arrow.mp3');
   wumpus = new Audio('../../assets/wumpus.mp3');
   no_arrow = new Audio('../../assets/no_arrow.mp3');
+<<<<<<< Updated upstream
 
+=======
+  win = new Audio('../../assets/win.mp3');
+>>>>>>> Stashed changes
 
   visitedGrid : Coordinate[] = [];
   safestNode : Coordinate[] = [];
@@ -61,6 +71,7 @@ export class GameComponent implements OnInit {
                   [0,0,0,0,0,0,0,0,0,0],
                   [0,0,0,0,0,0,0,0,0,0]];
 
+    //this.getTraverseBoard();
 
     this.traverse_board = [['S','W','S','S','S','S','S','S','P','S'],
                           ['S','S','S','S','S','S','S','S','S','S'],
@@ -74,26 +85,31 @@ export class GameComponent implements OnInit {
                           ['A','S','S','P','S','W','S','S','S','S']];
 
 
-    this.copy_traverse_board = [['S','W','S','S','S','S','S','S','P','S'],
-                                ['S','S','S','S','S','S','S','S','S','S'],
-                                ['P','S','S','P','S','S','P','S','W','G'],
-                                ['S','S','S','S','S','S','S','S','S','P'],
-                                ['S','S','G','S','S','W','S','S','P','S'],
-                                ['W','P','P','S','S','S','S','S','S','S'],
-                                ['S','W','G','S','S','S','W','S','S','S'],
-                                ['S','S','P','S','G','P','S','S','G','S'],
-                                ['S','S','S','S','P','S','S','S','S','S'],
-                                ['S','S','S','P','S','W','S','S','S','S']];
+    // this.copy_traverse_board = [['S','W','S','S','S','S','S','S','P','S'],
+    //                             ['S','S','S','S','S','S','S','S','S','S'],
+    //                             ['P','S','S','P','S','S','P','S','W','G'],
+    //                             ['S','S','S','S','S','S','S','S','S','P'],
+    //                             ['S','S','G','S','S','W','S','S','P','S'],
+    //                             ['W','P','P','S','S','S','S','S','S','S'],
+    //                             ['S','W','G','S','S','S','W','S','S','S'],
+    //                             ['S','S','P','S','G','P','S','S','G','S'],
+    //                             ['S','S','S','S','P','S','S','S','S','S'],
+    //                             ['S','S','S','P','S','W','S','S','S','S']];
 
+<<<<<<< Updated upstream
 
     this.findBoardValues();
     this.init();
+=======
+    // this.findBoardValues();
+>>>>>>> Stashed changes
     //this.AImove(new Coordinate(this.agentX, this.agentY));
     //console.log(this.agentX + " " + this.agentY);
 
 
   }
 
+<<<<<<< Updated upstream
   init() {
     this.wumpusPrediction = [[0,0,0,0,0,0,0,0,0,0],
                             [0,0,0,0,0,0,0,0,0,0],
@@ -121,12 +137,25 @@ export class GameComponent implements OnInit {
     for(let i=0;i<10;i++) {
       for(let j=0;j<10;j++) {
         if(this.traverse_board[i][j]=='A') {
+=======
+  
+
+  findBoardValues()
+  {
+    for(let i=0;i<10;i++)
+    {
+      for(let j=0;j<10;j++)
+      {
+        if(this.traverse_board[i][j]=='A')
+        {
+>>>>>>> Stashed changes
           this.visitedGrid.push(new Coordinate(i, j));
           this.board[i][j]=2;
           this.agentX = i;
           this.agentY = j;
           this.traverse_board[i][j] ='S';
         }
+<<<<<<< Updated upstream
         else if(this.traverse_board[i][j]=='S') {
           this.checkPit(i,j);
           this.checkWumpus(i,j);
@@ -134,6 +163,17 @@ export class GameComponent implements OnInit {
           //console.log('i: '+ i + ' j: ' + j + ' ' +this.traverse_board[i][j] + this.copy_traverse_board[i][j]);
         }
         else if(this.traverse_board[i][j]=='G') {
+=======
+        // else if(this.traverse_board[i][j]=='S')
+        // {
+        //   this.checkPit(i,j);
+        //   this.checkWumpus(i,j);
+        //   this.checkPit_Wumpus(i,j);
+        //   //console.log('i: '+ i + ' j: ' + j + ' ' +this.traverse_board[i][j] + this.copy_traverse_board[i][j]);
+        // }
+        else if(this.traverse_board[i][j]=='G')
+        {
+>>>>>>> Stashed changes
           this.numOfGolds = this.numOfGolds + 1;
         }
         else if(this.traverse_board[i][j]=='W') {
@@ -294,7 +334,11 @@ export class GameComponent implements OnInit {
       this.score += 2000;
       this.isGoldFound = 1;
       this.numOfGolds--;
+<<<<<<< Updated upstream
       if (this.numOfGolds == 0) this.gameStatus = 1;
+=======
+      if(this.numOfGolds==0)this.win.play();
+>>>>>>> Stashed changes
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
@@ -315,7 +359,11 @@ export class GameComponent implements OnInit {
       this.score += 2000;
       this.isGoldFound = 1;
       this.numOfGolds--;
+<<<<<<< Updated upstream
       if (this.numOfGolds == 0) this.gameStatus = 1;
+=======
+      if(this.numOfGolds==0)this.win.play();
+>>>>>>> Stashed changes
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
@@ -336,7 +384,12 @@ export class GameComponent implements OnInit {
       this.score += 2000;
       this.isGoldFound = 1;
       this.numOfGolds--;
+<<<<<<< Updated upstream
       if (this.numOfGolds == 0) this.gameStatus = 1;
+=======
+      if(this.numOfGolds==0)this.win.play();
+
+>>>>>>> Stashed changes
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
@@ -356,7 +409,12 @@ export class GameComponent implements OnInit {
       this.score += 2000;
       this.isGoldFound = 1;
       this.numOfGolds--;
+<<<<<<< Updated upstream
       if (this.numOfGolds == 0) this.gameStatus = 1;
+=======
+      if(this.numOfGolds==0)this.win.play();
+
+>>>>>>> Stashed changes
       this.traverse_board[this.agentX][this.agentY] = 'S';
       this.copy_traverse_board[this.agentX][this.agentY] = 'S';
     }
@@ -475,7 +533,136 @@ export class GameComponent implements OnInit {
 
   }
 
+<<<<<<< Updated upstream
   makeZero() {
+=======
+  //Updated by Khairul --- START
+
+  makeShow()
+  {
+    if(this.isShow){this.isShow=0;this.status = "Show";}
+    else {this.isShow = 1;this.status = "Hide";}
+    
+  }
+
+  onChange = (event: Event) => {
+    const target= event.target as HTMLInputElement;
+    this.file = (target.files as FileList)[0];
+
+    let fileReader: FileReader = new FileReader();
+    
+    fileReader.onloadend = (e)=> {
+    //  self.fileContent = fileReader.result;
+   //  console.log(fileReader.result) ;
+   if(fileReader.result){
+    const fileInput=fileReader.result.toString();
+    console.log(JSON.parse(JSON.stringify(fileInput)));
+
+    this.filecontent = JSON.parse(JSON.stringify(fileInput))
+   }
+    }
+    fileReader.readAsText(this.file);
+
+    this.getTraverseBoard(this.filecontent);
+    
+  };
+
+  randomBoard()
+  {
+
+    this.traverse_board = [['S','S','S','S','S','S','S','S','S','S'],
+                          ['S','S','S','S','S','S','S','S','S','S'],
+                          ['S','S','S','S','S','S','S','S','S','S'],
+                          ['S','S','S','S','S','S','S','S','S','S'],
+                          ['S','S','S','S','S','S','S','S','S','S'],
+                          ['S','S','S','S','S','S','S','S','S','S'],
+                          ['S','S','S','S','S','S','S','S','S','S'],
+                          ['S','S','S','S','S','S','S','S','S','S'],
+                          ['S','S','S','S','S','S','S','S','S','S'],
+                          ['S','S','S','S','S','S','S','S','S','S']];
+
+    let pits = Math.random() * (10 - 5) + 5;
+    let wumpus = Math.random() * (10 - 5) + 5;
+    let golds = Math.random() * (10 - 5) + 5;
+
+    while(golds!=0)
+    {
+      let x = Math.floor(Math.random() * 10);
+      let y = Math.floor(Math.random() * 10);
+
+      console.log(x,y);
+
+      if(this.traverse_board[x][y]=='S')
+      {
+        this.traverse_board[x][y] = 'G';
+        golds--;
+      }
+
+    }
+
+    // while(pits!=0)
+    // {
+    //   let x = Math.floor(Math.random() * 10);
+    //   let y = Math.floor(Math.random() * 10);
+
+    //   if(this.traverse_board[x][y]=='S')
+    //   {
+    //     this.traverse_board[x][y] = 'P';
+    //     pits--;
+    //   }
+
+    // }
+    // while(wumpus!=0)
+    // {
+    //   let x = Math.floor(Math.random() * 10);
+    //   let y = Math.floor(Math.random() * 10);
+
+    //   if(this.traverse_board[x][y]=='S')
+    //   {
+    //     this.traverse_board[x][y] = 'W';
+    //     wumpus--;
+    //   }
+
+    // }
+    console.log(this.traverse_board);
+
+  }
+
+  getTraverseBoard(filecontent:any)
+  {
+    
+
+
+    console.log(filecontent.length)
+    let j=0,k=0;
+    let s = "" ;
+    for(let i=0;i<filecontent.length;i++)
+    {
+      if(filecontent[i]=='\n' || filecontent[i]=='\r')continue;
+      if(filecontent[i]==',')
+      {
+        this.traverse_board[k][j] = s;
+        s = "";
+        j++;
+        if(j>9){k++;j=j%10;}
+      }
+      else
+      {
+        s += filecontent[i];
+      }
+    }
+    console.log(this.traverse_board)
+    this.findBoardValues();
+    this.copy_traverse_board = this.traverse_board;
+    this.copy_traverse_board[this.agentX][this.agentY] = 'S';
+    
+  }
+
+  // END
+
+  makeZero()
+  {
+>>>>>>> Stashed changes
     this.isGoldFound = 0;
   }
 

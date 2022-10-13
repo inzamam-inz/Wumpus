@@ -2,8 +2,13 @@
   <div class="canvus flex-div">
     <div class="game-board">
 
+<<<<<<< Updated upstream
       <div class="progress mb-2" *ngIf="risk == 0">
         <div class="progress-bar bg-danger" role="progressbar" style="width: 0%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+=======
+      <div *ngIf="isShow==1" class="progress mb-2">
+        <div class="progress-bar bg-danger" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+>>>>>>> Stashed changes
       </div>
       <div class="progress mb-2" *ngIf="risk == 25">
         <div class="progress-bar bg-danger" role="progressbar" style="width: 25%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
@@ -70,7 +75,7 @@
       </div>
     </div>
 
-    <div class="main-board">
+    <div *ngIf="isShow==1" class="main-board">
       <div class="flex-div" *ngFor="let row of copy_traverse_board;let i=index">
         <div  *ngFor="let col of row;let j=index" >
 
@@ -123,7 +128,11 @@
     <div class="information">
 
       <div class="score">
+<<<<<<< Updated upstream
         <h4>Score : {{score}}</h4>
+=======
+        <h4>{{"Score :  "+totalScore}}</h4>
+>>>>>>> Stashed changes
       </div>
 
       <div class="gold-needed">
@@ -223,5 +232,34 @@
       </div>
     </div>
 
+<<<<<<< Updated upstream
+=======
+    <div class="showMainGrid">
+      <button (click)="makeShow()">{{status}}</button>
+      
+    </div>
+
+    <div class="form-holder">
+      <div class="form-content">
+          <div class="form-items">
+              
+              <form class="requires-validation" novalidate>
+              
+                  <div class="col-md-12">
+                      <input class="form-control" type="file" name="file" placeholder="File" (change)="onChange($event)"  >
+                      <div class="valid-feedback">File field is selected!</div>
+                      <div class="invalid-feedback">File field cannot be blank!</div>
+                  </div>
+
+                  
+              </form>
+          </div>
+      </div>
+    </div>
+
+    <button (click)="nextAImove()">NEXT</button>
+    <button (click)="moveForwardAI()">AIMOVE</button>
+    <button (click)="randomBoard()">Random</button>
+>>>>>>> Stashed changes
 
   </div>
